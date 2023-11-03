@@ -1,1 +1,3 @@
 # Financial-Distress-Prediction
+- This project follows CRISP-DM methodology, short for Cross-Industry Standard Process for Data Mining, one of the most recognized data science workflow frameworks; The idea of CRISP-DM was to create a standardized process that could be used across industries. CRISP-DM consists of 6 iterative phases that each have their designated tasks that ought to be fulfilled.
+- The aim of this project is to tackle a  a multivariate time series classification problem with machine learning, to determine whether a company is financially distressed.
