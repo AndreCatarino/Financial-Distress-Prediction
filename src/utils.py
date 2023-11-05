@@ -6,7 +6,6 @@ def load_original_data(file_path="../data/raw/financial_distress.csv") -> pd.Dat
     df = pd.read_csv(file_path)
     return df
 
-
 def load_preprocessed_data(file_path="../data/processed/financial_distress.pkl") -> pd.DataFrame: 
     df = pd.read_pickle(file_path)
     return df
