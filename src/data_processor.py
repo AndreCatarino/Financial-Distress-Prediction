@@ -83,3 +83,16 @@ class DataProcessor:
         plt.show()
         return X, y
         
+    def check_time_monotonicity(self, df:pd.DataFrame, time_column:str) -> bool:
+        """
+        Verify if temporal order of data is preserved, by checking if the time column is monotonic
+        and increasing for each group (company)
+        :param df: Dataframe to be checked
+        :param time_column: Name of the time column
+        :return: True if monotonic, False otherwise
+        """
+        groups = df.groupby('Company')
+        for group in groups:
+            if not group[1][time_column].is_monotonic_increasing:
+                return False
+        return True
