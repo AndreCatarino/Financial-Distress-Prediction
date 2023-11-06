@@ -6,6 +6,7 @@ from numpy import where
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import Pipeline
+from typing import Optional
 
 class DataProcessor:
     def __init__(self, data: pd.DataFrame) -> None:
@@ -28,7 +29,7 @@ class DataProcessor:
         self.y = self.data[target_column]
         return self.X, self.y
 
-    def scale(self) -> pd.DataFrame:
+    def scale(self, X:pd.DataFrame=Optional) -> pd.DataFrame:
         """ 
         Scale the data using StandardScaler
         :return: Scaled features dataframe
@@ -36,7 +37,10 @@ class DataProcessor:
         if self.X is None:
             raise Exception("Feature matrix not found. Run create_feature_matrix_and_target_vector() first.")
         scaler = StandardScaler()
-        scaled_X = scaler.fit_transform(self.X)
+        if X is None:
+            scaled_X = scaler.fit_transform(self.X)
+        else:
+            scaled_X = scaler.fit_transform(X)
         return pd.DataFrame(scaled_X, columns=self.X.columns)
     
     def class_distribution(self, X:pd.DataFrame, y:pd.DataFrame) -> None:

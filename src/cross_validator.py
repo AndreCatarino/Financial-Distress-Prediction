@@ -1,6 +1,6 @@
-from sklearn.metrics import accuracy_score
 import pandas as pd
 from typing import List
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
 """ 
 Approach to forward chaining cross validation:
@@ -47,7 +47,7 @@ class TimeSeriesCrossValidator:
         indexes = []
         for i in range(self.n_splits):
             indexes.append([])
-        # For each group, distributes the indices into n_splits in a way that follows Forward Chaining
+        # For each group, distributes the indices into n_splits 
         for group_index in self.group_indexes:
             for i in range(self.n_splits):
                 indexes[i].extend(group_index[i::self.n_splits])
@@ -55,26 +55,36 @@ class TimeSeriesCrossValidator:
 
     def split(self) -> tuple:
         """
-        Split the data into train and test sets
+        For each split, yield the train and test sets using the indexes obtained from _get_indexes() 
         :return: Train and test sets
         """
         for i in range(self.n_splits):
-            train_index = self.indexes[i]
-            test_index = self.indexes[i+1]
-            X_train, X_test = self.X.iloc[train_index], self.X.iloc[test_index]
-            y_train, y_test = self.y.iloc[train_index], self.y.iloc[test_index]
-            yield X_train, X_test, y_train, y_test
+            # Constructing the indices for the training set: train_indexes contain all indices from splits other than the current one. 
+            train_indexes = [index for j, index in enumerate(self.indexes) if j != i]
+            # Flattening the list of lists into a single list
+            train_indexes = [item for sublist in train_indexes for item in sublist]
+            # Indices for the test set, which corresponds to the current split i.
+            test_indexes = self.indexes[i]
+            yield self.X.iloc[train_indexes], self.X.iloc[test_indexes], self.y.iloc[train_indexes], self.y.iloc[test_indexes]
 
-    def evaluate(self, model:object, scoring:str='accuracy') -> list:
+    def evaluate(self, model:object) -> tuple:
         """
         Evaluate the model using cross validation
         :param model: Model to be evaluated
         :param scoring: Scoring metric
         :return: List of scores
         """
-        scores = []
+        acc_scores = []
+        prec_scores = []
+        rec_scores = []
+        f1_scores = []
+        roc_auc_scores = []
         for X_train, X_test, y_train, y_test in self.split():
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
-            scores.append(accuracy_score(y_test, y_pred))
-        return scores
+            acc_scores.append(accuracy_score(y_test, y_pred))
+            prec_scores.append(precision_score(y_test, y_pred))
+            rec_scores.append(recall_score(y_test, y_pred))
+            f1_scores.append(f1_score(y_test, y_pred))
+            roc_auc_scores.append(roc_auc_score(y_test, y_pred))
+        return acc_scores, prec_scores, rec_scores, f1_scores, roc_auc_scores
