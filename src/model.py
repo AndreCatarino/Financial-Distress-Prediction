@@ -8,7 +8,6 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
-from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping
 
 class BaseModel(ABC):
@@ -40,7 +39,7 @@ class NaiveBayesClassifier(BaseModel):
         self.model.fit(self.X_train, self.y_train)
 
     def predict(self):
-        return self.model.predict(X_test)
+        return self.model.predict(self.X_test)
 
     def fit_predict(self):
         return self.fit().predict()
@@ -88,7 +87,7 @@ class ANN_classifier(BaseModel):
 
     def fit(self):
         self.model = Sequential()
-        self.model.add(Dense(32, activation='relu', input_dim=8))
+        self.model.add(Dense(32, activation='relu', input_dim=self.X_train.shape[-1]))
         self.model.add(Dense(1, activation='sigmoid'))
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
         self.model.fit(self.X_train, self.y_train, epochs=10, batch_size=32, verbose=2)

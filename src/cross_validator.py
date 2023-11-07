@@ -67,7 +67,7 @@ class TimeSeriesCrossValidator:
             test_indexes = self.indexes[i]
             yield self.X.iloc[train_indexes], self.X.iloc[test_indexes], self.y.iloc[train_indexes], self.y.iloc[test_indexes]
 
-    def evaluate(self, model:object) -> tuple:
+    def evaluate(self, model:object, return_model:bool=False) -> tuple:
         """
         Evaluate the model using cross validation
         :param model: Model to be evaluated
@@ -87,4 +87,6 @@ class TimeSeriesCrossValidator:
             rec_scores.append(recall_score(y_test, y_pred))
             f1_scores.append(f1_score(y_test, y_pred))
             roc_auc_scores.append(roc_auc_score(y_test, y_pred))
+        if return_model:
+            return model, acc_scores, prec_scores, rec_scores, f1_scores, roc_auc_scores
         return acc_scores, prec_scores, rec_scores, f1_scores, roc_auc_scores
