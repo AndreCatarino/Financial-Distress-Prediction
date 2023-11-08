@@ -53,11 +53,11 @@ class TimeSeriesCrossValidator:
                 indexes[i].extend(group_index[i::self.n_splits])
         return indexes
 
-    def split(self) -> tuple:
-        """
+    """
+    def split(self) -> tuple: 
         For each split, yield the train and test sets using the indexes obtained from _get_indexes() 
         :return: Train and test sets
-        """
+        
         for i in range(self.n_splits):
             # Constructing the indices for the training set: train_indexes contain all indices from splits other than the current one. 
             train_indexes = [index for j, index in enumerate(self.indexes) if j != i]
@@ -65,6 +65,18 @@ class TimeSeriesCrossValidator:
             train_indexes = [item for sublist in train_indexes for item in sublist]
             # Indices for the test set, which corresponds to the current split i.
             test_indexes = self.indexes[i]
+            yield self.X.iloc[train_indexes], self.X.iloc[test_indexes], self.y.iloc[train_indexes], self.y.iloc[test_indexes]
+    """
+    def split(self) -> tuple:
+        """
+        For each split, yield the train and test sets using the indexes obtained from _get_indexes() respecting the forward chaining approach
+        :return: Train and test sets
+        """
+        for i in range(self.n_splits):
+            train_indexes = []
+            test_indexes = self.indexes[i]  # Use the current fold's indexes for testing
+            for j in range(i):
+                train_indexes.extend(self.indexes[j])  # Include all previous folds in training data
             yield self.X.iloc[train_indexes], self.X.iloc[test_indexes], self.y.iloc[train_indexes], self.y.iloc[test_indexes]
 
     def evaluate(self, model:object, return_model:bool=False) -> tuple:
