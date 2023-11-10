@@ -78,6 +78,9 @@ class TimeSeriesCrossValidator:
         f1_scores = []
         roc_auc_scores = []
         for X_train, X_test, y_train, y_test in self.split():
+            # Check if the training set is empty
+            if not X_train.shape[0]:
+                continue
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             acc_scores.append(accuracy_score(y_test, y_pred))
